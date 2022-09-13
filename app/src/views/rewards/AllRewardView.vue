@@ -6,27 +6,23 @@
       {{ error }}
     </div>
 
-    <div v-for="reward in rewards"
-         :key="reward.id"
-         class="grid grid-cols-2 p-4 mb-4 border-2 border-blue-800 rounded-lg"
+    <reward-card v-for="reward in rewards"
+      :reward="reward"
+      :key="reward.id"
+      :url="`rewards/${reward.id}`"
     >
-      <h3 class="text-xl">{{ reward.name }}</h3>
-      <p class="text-5xl">{{ reward.point }}</p>
-      <RouterLink :to="`rewards/${reward.id}`">Detail</RouterLink>
-      <button @click="selectReward(reward)"
-         class="px-2 py-1 border rounded-xl"
-      >
-        Redeem
-      </button>
-    </div>
+    {{ reward.detail }}
+    <template #total_amount>
+      จำกัดจำนวน {{ reward.total_amount }} สิทธิ์
+    </template>
+    </reward-card>
     
     {{ selected }}
   </section>
 </template>
 
 <script>
-import axios from 'axios'
-
+import RewardCard from '@/components/rewards/RewardCard.vue'
 export default {
   data() {
     return {
@@ -35,6 +31,9 @@ export default {
       rewards: null,
       error: null
     }
+  },
+  components: {
+    RewardCard
   },
   methods: {
     selectReward(reward) {
@@ -47,10 +46,9 @@ export default {
   async mounted() {
     console.log("mounted")
     this.error = null
-    const url = "http://localhost/api/rewards"
 
     try {
-      const response = await axios.get(url)
+      const response = await this.$axios.get("/rewards")
       if (response.status === 200) {
         this.rewards = response.data.data
       } else {

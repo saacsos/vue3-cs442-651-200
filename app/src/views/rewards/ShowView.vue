@@ -1,5 +1,5 @@
 <template>
-  <div class="m-8">
+  <div class="m-8" v-if="reward">
     <h1 class="text-3xl">{{ reward.name }}</h1>
 
     <p>{{ reward.detail }}</p>
@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import Axios from 'axios'
 export default {
   data() {
     return {
@@ -19,10 +18,9 @@ export default {
   },
   async created() {
     const id = this.$route.params.id
-    const url = `http://localhost/api/rewards/${id}`
     
     try {
-      const response = await Axios.get(url)
+      const response = await this.$axios.get(`/rewards/${id}`)
       if (response.status == 200) {
         this.reward = response.data.data
         console.table(this.reward)
