@@ -2,13 +2,18 @@
   <section class="mx-8">
     <h1 class="text-3xl text-yellow-700">{{ title }}</h1>
 
+    <div v-if="error != null">
+      {{ error }}
+    </div>
+
     <div v-for="reward in rewards"
          :key="reward.id"
          class="grid grid-cols-2 p-4 mb-4 border-2 border-blue-800 rounded-lg"
     >
       <h3 class="text-xl">{{ reward.name }}</h3>
       <p class="text-5xl">{{ reward.point }}</p>
-      <button v-on:click="selectReward(reward)"
+      <RouterLink :to="`rewards/${reward.id}`">Detail</RouterLink>
+      <button @click="selectReward(reward)"
          class="px-2 py-1 border rounded-xl"
       >
         Redeem
@@ -27,28 +32,22 @@ export default {
     return {
       title: "Reward List",
       selected: null,
-      rewards: null
+      rewards: null,
+      error: null
     }
   },
   methods: {
     selectReward(reward) {
-      this.selected = reward
-      console.table(this.selected)
+      this.$router.push({
+        name: 'rewards.show', 
+        params: { id: reward.id }
+      })
     }
   },
   async mounted() {
     console.log("mounted")
+    this.error = null
     const url = "http://localhost/api/rewards"
-    // const response = axios.get(url)
-    //           .then((responseData) => {
-    //             this.rewards = responseData.data.data
-    //           })
-
-    // Non-Blocking I/O
-    // Asynchronous Language
-      // 1. Callback -> Hell Loop
-      // 2. Promise -> Hell Loop
-      // 3. async-await
 
     try {
       const response = await axios.get(url)
@@ -58,8 +57,7 @@ export default {
         console.error(response.status)
       }
     } catch (error) {
-      console.error(error.message)
-      this.selected = error.message
+      this.error = error.message
     }
   }
 }

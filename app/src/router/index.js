@@ -31,6 +31,16 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('@/views/rewards/AllRewardView.vue')
     }, 
+    {
+      path: '/rewards/:id',
+      name: 'rewards.show',
+      component: () => import('@/views/rewards/ShowView.vue')
+    },
+    {
+      path: '/rewards/create',
+      name: 'rewards.create',
+      component: () => import('@/views/rewards/CreateView.vue')
+    }
   ]
 })
 
