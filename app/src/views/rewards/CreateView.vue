@@ -39,7 +39,13 @@
 
 <script>
 import RewardCard from '@/components/rewards/RewardCard.vue'
+import { useRewardStore } from '@/stores/reward.js'
+
 export default {
+  setup() {
+    const reward_store = useRewardStore()
+    return { reward_store }
+  },
   data() {
     return {
       reward: {
@@ -56,20 +62,20 @@ export default {
   },
   methods: {
     async saveNewReward() {
+      this.error = null
       // todo: validate data here
 
       try {
-        this.reward.balance = this.reward.total_amount
-        this.reward.is_active = true
-        const response = await this.$axios.post('/rewards', this.reward)
-
-        if (response.status == 201) {
-          let reward_id = response.data.reward_id
-          this.$router.push({ name: 'rewards.show', params: {id: reward_id}})
+        
+        const reward_id = await this.reward_store.add(this.reward)
+        if (reward_id) {
+          this.$router.push(`/rewards/${reward_id}`)
         }
+        
+        
       } catch (error) {
         this.error = error.message
-        console.log(error)
+        console.error(error)
       }
     }
   }
