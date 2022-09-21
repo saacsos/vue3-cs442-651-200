@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost/api'
+  // baseURL: 'http://localhost/api'
+  baseURL: 'https://cs442-651-api-200.loca.lt/api'
 })
 
 const JWT_TOKEN_LOCALSTORAGE_KEY = 'jwt_token'
@@ -26,6 +27,10 @@ export const authAPI = {
     return false
   },
   async me () {
+    const _token = localStorage.getItem(JWT_TOKEN_LOCALSTORAGE_KEY)
+    if (_token) {
+      axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + _token
+    }
     const response = await axiosInstance.post('/auth/me')
     if (response.status == 200) {
       return response.data.data
