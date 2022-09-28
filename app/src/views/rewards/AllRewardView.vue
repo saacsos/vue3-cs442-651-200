@@ -55,6 +55,7 @@
 <script>
 import RewardCard from '@/components/rewards/RewardCard.vue'
 import { useRewardStore } from '@/stores/reward.js'
+import SocketioService from '@/services/socketio.js'
 
 export default {
   setup() {
@@ -90,7 +91,19 @@ export default {
   components: {
     RewardCard
   },
+  created() {
+    SocketioService.setupSocketConnection()
+    SocketioService.getSocket().on('rewards.index', this.refreshRewards)
+  },
   methods: {
+    async refreshRewards(data) {
+      if (data.refresh) {
+        await this.reward_store.fetch()
+        this.rewards = this.reward_store.getRewards
+        this.sortOption = 'default'
+      }
+    },
+    
     selectReward(reward) {
       this.$router.push({
         name: 'rewards.show', 

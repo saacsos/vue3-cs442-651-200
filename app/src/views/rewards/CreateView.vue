@@ -40,6 +40,7 @@
 <script>
 import RewardCard from '@/components/rewards/RewardCard.vue'
 import { useRewardStore } from '@/stores/reward.js'
+import SocketioService from '@/services/socketio.js'
 
 export default {
   setup() {
@@ -60,19 +61,21 @@ export default {
   components: {
     RewardCard
   },
+  created() {
+    SocketioService.setupSocketConnection()
+  },
   methods: {
     async saveNewReward() {
       this.error = null
       // todo: validate data here
-
       try {
-        
         const reward_id = await this.reward_store.add(this.reward)
         if (reward_id) {
+          SocketioService.sendToServer('rewards.create', {
+            success: true
+          })
           this.$router.push(`/rewards/${reward_id}`)
         }
-        
-        
       } catch (error) {
         this.error = error.message
         console.error(error)
